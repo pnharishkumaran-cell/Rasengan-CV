@@ -1,5 +1,7 @@
 import cv2
 import mediapipe as mp
+import math
+time=0
 
 mp_hands=mp.solutions.hands
 hands=mp_hands.Hands()
@@ -8,6 +10,7 @@ mp_draw=mp.solutions.drawing_utils
 
 camera = cv2.VideoCapture(0)
 while True:
+    time+=0.2
     success, frame=camera.read()
     if not success:
         break
@@ -27,6 +30,8 @@ while True:
 
             cx=int(landmark.x * w)
             cy=int(landmark.y * h)
+            radius=25+int(5*math.sin(time))
+
 
             cv2.circle(frame,(cx,cy),10,(255,0,0),-1)
             
