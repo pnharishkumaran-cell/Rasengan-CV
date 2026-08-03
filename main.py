@@ -21,6 +21,15 @@ while True:
                 hand_landmarks,
                 mp_hands.HAND_CONNECTIONS
             )
+
+            h,w,_=frame.shape
+            landmark = hand_landmarks.landmark[9]
+
+            cx=int(landmark.x * w)
+            cy=int(landmark.y * h)
+
+            cv2.circle(frame,(cx,cy),10,(255,0,0),-1)
+            
     cv2.imshow("Rasengan CV",frame)
 
     if cv2.waitKey(1) == ord("q"):
