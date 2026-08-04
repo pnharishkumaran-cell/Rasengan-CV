@@ -26,14 +26,33 @@ while True:
             )
 
             h,w,_=frame.shape
-            landmark = hand_landmarks.landmark[9]
+            palm_points=[0,5,9,13,17]
+            sum_x =0
+            sum_y =0
+            for point in palm_points:
+                landmark=hand_landmarks.landmark[point]
 
-            cx=int(landmark.x * w)
-            cy=int(landmark.y * h)
+                sum_x+=landmark.x
+                sum_y+=landmark.y
+            cx =int((sum_x/len(palm_points))*w)
+            cy =int((sum_y/len(palm_points))*h)
             radius=25+int(5*math.sin(time))
 
+            cv2.circle(frame,(cx,cy),radius+15,(255,150,50),2)
+            cv2.circle(frame,(cx,cy),radius+8,(255,50,0),2)
 
-            cv2.circle(frame,(cx,cy),10,(255,0,0),-1)
+
+            cv2.circle(frame,(cx,cy),radius,(255,0,0),-1)
+            
+            orbit_radius=radius+12
+
+            for i in range(60):
+                angle=time+(i*(2*math.pi/40))
+
+                particle_x=int(cx+orbit_radius*math.cos(angle))
+                particle_y=int(cy+orbit_radius*math.sin(angle))
+                cv2.circle(frame,(particle_x,particle_y),1,(255,255,255))
+    
             
     cv2.imshow("Rasengan CV",frame)
 
