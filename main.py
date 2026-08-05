@@ -1,6 +1,7 @@
 import cv2
 import mediapipe as mp
 import math
+import random
 time=0
 
 mp_hands=mp.solutions.hands
@@ -36,39 +37,79 @@ while True:
                 sum_y+=landmark.y
             cx =int((sum_x/len(palm_points))*w)
             cy =int((sum_y/len(palm_points))*h)
-            radius=35+int(5*math.sin(time))
+            radius=40+int(5*math.sin(time))
 
-            cv2.circle(frame,(cx,cy),radius+15,(255,150,50),2)
-            cv2.circle(frame,(cx,cy),radius+8,(255,50,0),2)
+            cv2.circle(frame,(cx,cy),radius+10,(120,60,0),-1)
+            cv2.circle(frame,(cx,cy),radius+6,(180,120,50),-1)
+            cv2.circle(frame,(cx,cy),radius+2,(255,200,100),-1)
+            cv2.circle(frame,(cx,cy),radius,(255,255,255),-1)
 
 
-            cv2.circle(frame,(cx,cy),radius,(255,0,0),-1)
             
-            inner_radius=radius+8
-            middle_radius=radius+16
-            outer_radius=radius+24
+          
+
+            colors=[
+                (255,255,255),
+                (255,255,0),
+                (255,200,100),
+                (255,150,50),
+                (220,120,30),
+
+            ]
 
             for i in range(60):
+                inner_radius=radius+8+3*math.sin(time*2+i)
+                middle_radius=radius+16+4*math.sin(time*1.5+i)
+                outer_radius=radius+24+5*math.sin(time+i)
+                
                 particle_size=1+(i%3)
+
+                particle_color = colors[i%len(colors)]
                 inner_angle=(time*(1+i*0.05))+i*(2*math.pi/60)
 
                 inner_x=int(cx+inner_radius*math.cos(inner_angle))
                 inner_y=int(cy+inner_radius*math.sin(inner_angle))
-                cv2.circle(frame,(inner_x,inner_y),particle_size,(255,255,255))
+
+                inner_x+=random.randint(-2,2)
+                inner_y+=random.randint(-2,2)
+
+                trial_x = int(inner_x -5*math.cos(inner_angle))
+                trial_y = int(inner_y -5*math.sin(inner_angle))
+
+                cv2.line(frame,(trial_x,trial_y),(inner_x,inner_y),particle_color,1)
+                cv2.circle(frame,(inner_x,inner_y),particle_size,particle_color,-1) 
 
                 middle_angle=(time*0.7)+i*(2*math.pi/60)
 
                 middle_x=int(cx+middle_radius*math.cos(middle_angle))
                 middle_y=int(cy+middle_radius*math.sin(middle_angle))
 
-                cv2.circle(frame,(middle_x,middle_y),particle_size,(255,200,100),-1)
+                middle_x+=random.randint(-2,2)
+                middle_y+=random.randint(-2,2)
+
+                trial_x=int(middle_x-5*math.cos(middle_angle))
+                trial_y=int(middle_y-5*math.sin(middle_angle))
+
+                cv2.line(frame,(trial_x,trial_y),(middle_x,middle_y),particle_color,1)
+                cv2.circle(frame,(middle_x,middle_y),particle_size,particle_color,-1)
 
                 outer_angle=(time*0.4)+i*(2*math.pi/60)
 
                 outer_x=int(cx+outer_radius*math.cos(outer_angle))
                 outer_y=int(cy+outer_radius*math.sin(outer_angle))
 
-                cv2.circle(frame,(outer_x,outer_y),particle_size,(255,150,50),-1)
+                outer_x+=random.randint(-2,2)
+                outer_y+=random.randint(-2,2)
+
+                trial_x=int(outer_x-5*math.cos(outer_angle))
+                trial_y=int(outer_y-5*math.sin(outer_angle))
+
+                cv2.line(frame,(trial_x,trial_y),(outer_x,outer_y),particle_color,1)
+                cv2.circle(frame,(outer_x,outer_y),particle_size,particle_color,-1)
+
+         
+
+                
     
             
     cv2.imshow("Rasengan CV",frame)
