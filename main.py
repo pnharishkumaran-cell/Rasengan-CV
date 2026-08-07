@@ -71,6 +71,16 @@ while True:
                         time*2.2+arm_offset+i*0.35
                     )
 
+                    for i in range(3):
+                        angle=time*2+i*(2*math.pi/3)
+                        for t in range(0,100,5):
+                            r=(t/100)*radius
+                            theta = angle +t * 0.08
+                            x=int(cx+r*math.cos(theta))
+                            y=int(cy+r*math.sin(theta))
+
+                            cv2.circle(frame,(x,y),1,(255,170,70),-1)
+
                     inner_x=int(cx+inner_radius*math.cos(inner_angle))
                     inner_y=int(cy+inner_radius*math.sin(inner_angle))
 
