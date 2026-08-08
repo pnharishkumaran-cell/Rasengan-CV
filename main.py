@@ -2,7 +2,9 @@ import cv2
 import mediapipe as mp
 import math
 import random
+import numpy as np
 time=0
+charge=0
 
 mp_hands=mp.solutions.hands
 hands=mp_hands.Hands()
@@ -11,7 +13,7 @@ mp_draw=mp.solutions.drawing_utils
 
 camera = cv2.VideoCapture(0)
 while True:
-    time+=0.2
+    time+=0.15 + charge*0.15
     success, frame=camera.read()
     if not success:
         break
@@ -37,7 +39,23 @@ while True:
                 sum_y+=landmark.y
             cx =int((sum_x/len(palm_points))*w)
             cy =int((sum_y/len(palm_points))*h)
+
+            thumb_x=int(hand_landmarks.landmark[4].x*frame.shape[1])
+            thumb_y=int(hand_landmarks.landmark[4].y*frame.shape[0])
+                        
+            index_x=int(hand_landmarks.landmark[8].x*frame.shape[1])
+            index_y=int(hand_landmarks.landmark[8].y*frame.shape[0])
+                        
+            hand_distance=math.hypot(index_x-thumb_x,index_y-thumb_y)
+                        
+            charge=1-np.clip(hand_distance/100,0,1)
+
             radius=40+int(5*math.sin(time))
+            
+            base_radius=radius
+            radius=int(base_radius+charge*20)
+    
+
 
             cv2.circle(frame,(cx,cy),radius+10,(120,60,0),-1)
             cv2.circle(frame,(cx,cy),radius+6,(180,120,50),-1)
@@ -56,24 +74,40 @@ while True:
                 (200,60,0),
 
             ]
+            thumb_x=int(hand_landmarks.landmark[4].x*frame.shape[1])
+            thumb_y=int(hand_landmarks.landmark[4].y*frame.shape[0])
+            
+            index_x=int(hand_landmarks.landmark[8].x*frame.shape[1])
+            index_y=int(hand_landmarks.landmark[8].y*frame.shape[0])
+            
+            hand_distance=math.hypot(index_x-thumb_x,index_y-thumb_y)
+            
+            charge=1-np.clip(hand_distance/100,0,1)
 
-            for arm in range(4):
+            rotation_speed=2+charge*3
+
+            base_radius=radius
+            radius=int(base_radius+charge*20)
+            
+
+
+            for arm in range(3):
                 for i in range(60):
                     inner_radius=radius+2+i*0.4
                     middle_radius=radius+8+i*0.45
                     outer_radius=radius+14+i*0.5
                 
-                    particle_size=max(1,4-i//10)
+                    particle_size=max(1,int((4-i//10)+charge*2))
 
                     particle_color = colors[i%len(colors)]
-                    arm_offset=arm*(2*math.pi/4)
+                    arm_offset=arm*(2*math.pi/3)
                     inner_angle = (
-                        time*2.2+arm_offset+i*0.35
+                        time*(2.2+arm+0.08)+arm_offset+i*0.18
                     )
 
                     for i in range(3):
-                        angle=time*2+i*(2*math.pi/3)
-                        for t in range(0,100,5):
+                        angle=time*rotation_speed+i*(2*math.pi/3)
+                        for t in range(0,100,7):
                             r=(t/100)*radius
                             theta = angle +t * 0.08
                             x=int(cx+r*math.cos(theta))
@@ -124,6 +158,8 @@ while True:
                         ring_y = int(cy+(radius+8)*math.sin(theta))
 
                         cv2.circle(frame,(ring_x,ring_y),2,(255,170,60),-1)
+
+                    
 
                     
 
