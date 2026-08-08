@@ -5,7 +5,7 @@ import random
 import numpy as np
 time=0
 charge=0
-
+smooth_charge=0
 mp_hands=mp.solutions.hands
 hands=mp_hands.Hands()
 
@@ -49,20 +49,25 @@ while True:
             hand_distance=math.hypot(index_x-thumb_x,index_y-thumb_y)
                         
             charge=1-np.clip(hand_distance/100,0,1)
+            smooth_charge=smooth_charge*0.8+charge*0.2
+            charge=smooth_charge
 
             radius=40+int(5*math.sin(time))
+            pulse_radius = radius + 6 +int(charge*8+3*math.sin(time*3))
             
             base_radius=radius
             radius=int(base_radius+charge*20)
     
-
+            core_radius=radius+int(charge*6+2*math.sin(time+6))
 
             cv2.circle(frame,(cx,cy),radius+10,(120,60,0),-1)
             cv2.circle(frame,(cx,cy),radius+6,(180,120,50),-1)
-            cv2.circle(frame,(cx,cy),radius+2,(255,200,100),-1)
-            cv2.circle(frame,(cx,cy),radius,(255,120,40),-1)
+            cv2.circle(frame,(cx,cy),core_radius+2,(255,200,100),-1)
+            cv2.circle(frame,(cx,cy),core_radius,(255,120,40),-1)
             cv2.circle(frame,(cx,cy),int(radius*0.75),(255,180,120),-1)
             cv2.circle(frame,(cx,cy),int(radius*0.4),(255,255,220),-1)
+
+            cv2.circle(frame,(cx,cy),pulse_radius,(25,180,80),1)
 
 
 
@@ -85,6 +90,8 @@ while True:
             charge=1-np.clip(hand_distance/100,0,1)
 
             rotation_speed=2+charge*3
+
+            trial_length=4+int(charge*8)
 
             base_radius=radius
             radius=int(base_radius+charge*20)
@@ -121,8 +128,8 @@ while True:
                     inner_x+=random.randint(-1,1)
                     inner_y+=random.randint(-1,1)
 
-                    trial_x = int(inner_x -10*math.cos(inner_angle))
-                    trial_y = int(inner_y -10*math.sin(inner_angle))
+                    trial_x = int(inner_x -trial_length*math.cos(inner_angle))
+                    trial_y = int(inner_y -trial_length*math.sin(inner_angle))
 
                     cv2.line(frame,(trial_x,trial_y),(inner_x,inner_y),particle_color,1)
                     cv2.circle(frame,(inner_x,inner_y),particle_size,particle_color,-1) 
@@ -135,8 +142,8 @@ while True:
                     middle_x+=random.randint(-1,1)
                     middle_y+=random.randint(-1,1)
 
-                    trial_x=int(middle_x-10*math.cos(middle_angle))
-                    trial_y=int(middle_y-10*math.sin(middle_angle))
+                    trial_x=int(middle_x-trial_length*math.cos(middle_angle))
+                    trial_y=int(middle_y-trial_length*math.sin(middle_angle))
 
                     cv2.line(frame,(trial_x,trial_y),(middle_x,middle_y),particle_color,1)
                     cv2.circle(frame,(middle_x,middle_y),particle_size,particle_color,-1)
@@ -149,6 +156,10 @@ while True:
                     outer_x+=random.randint(-1,1)
                     outer_y+=random.randint(-1,1)
 
+                    trial_x=int(outer_x-trial_length*math.cos(outer_angle))
+                    trial_y=int(outer_y-trial_length*math.sin(outer_angle))
+                    
+                    cv2.line(frame,(trial_x,trial_y),(outer_x,outer_y),particle_color,1)
                     cv2.circle(frame,(outer_x,outer_y),particle_size,particle_color,-1)
 
                     for angle in range(0,360,15):
