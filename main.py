@@ -8,6 +8,8 @@ charge=0
 smooth_charge=0
 mp_hands=mp.solutions.hands
 hands=mp_hands.Hands()
+smooth_cx =None
+smooth_cy=None
 
 mp_draw=mp.solutions.drawing_utils
 
@@ -40,6 +42,15 @@ while True:
             cx =int((sum_x/len(palm_points))*w)
             cy =int((sum_y/len(palm_points))*h)
 
+            if smooth_cx is None:
+                smooth_cx=cx
+                smooth_cy=cy
+            else:
+
+                smooth_cx=smooth_cx*0.8+cx*0.2
+                smooth_cy=smooth_cy*0.8+cy*0.2
+
+
             thumb_x=int(hand_landmarks.landmark[4].x*frame.shape[1])
             thumb_y=int(hand_landmarks.landmark[4].y*frame.shape[0])
                         
@@ -51,6 +62,8 @@ while True:
             charge=1-np.clip(hand_distance/100,0,1)
             smooth_charge=smooth_charge*0.8+charge*0.2
             charge=smooth_charge
+
+            fully_charged = charge>0.75
 
             radius=40+int(5*math.sin(time))
             pulse_radius = radius + 6 +int(charge*8+3*math.sin(time*3))
@@ -169,6 +182,17 @@ while True:
                         ring_y = int(cy+(radius+8)*math.sin(theta))
 
                         cv2.circle(frame,(ring_x,ring_y),2,(255,170,60),-1)
+            if fully_charged:
+                for i in range(20):
+                    burst_angle = ( 2*math.pi* i/120) + time*2
+                    burst_radius=radius+10+(i%5)*3+int(6*math.sin(time*4+i))
+                    burst_x=int(cx+burst_radius*math.cos(burst_angle))
+                    burst_y=int(cy+burst_radius*math.sin(burst_angle))
+                    cv2.circle(frame,(burst_x,burst_y),1,(255,180,80),-1)
+
+
+
+    
 
                     
 
