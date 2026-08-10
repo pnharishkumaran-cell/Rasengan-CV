@@ -117,9 +117,11 @@ while True:
                     middle_radius=radius+8+i*0.45
                     outer_radius=radius+14+i*0.5
                 
-                    particle_size=max(1,int((4-i//10)+charge*2))
+                    particle_size=max(1,int((4-i//10)+charge*2+math.sin(time*5+i)*0.7))
 
                     particle_color = colors[i%len(colors)]
+                    if i>int(20+charge*40):
+                        continue
                     arm_offset=arm*(2*math.pi/3)
                     inner_angle = (
                         time*(2.2+arm+0.08)+arm_offset+i*0.18
@@ -147,7 +149,7 @@ while True:
                     cv2.line(frame,(trial_x,trial_y),(inner_x,inner_y),particle_color,1)
                     cv2.circle(frame,(inner_x,inner_y),particle_size,particle_color,-1) 
 
-                    middle_angle=(time*1.5+arm_offset+i*0.35)
+                    middle_angle=(-time*1.5+arm_offset+i*0.35)
 
                     middle_x=int(cx+middle_radius*math.cos(middle_angle))
                     middle_y=int(cy+middle_radius*math.sin(middle_angle))
