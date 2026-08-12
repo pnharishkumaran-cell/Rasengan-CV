@@ -10,6 +10,8 @@ mp_hands=mp.solutions.hands
 hands=mp_hands.Hands()
 smooth_cx =None
 smooth_cy=None
+charge_start_time = None
+rasenshuriken=False
 
 mp_draw=mp.solutions.drawing_utils
 
@@ -63,6 +65,16 @@ while True:
             smooth_charge=smooth_charge*0.8+charge*0.2
             charge=smooth_charge
 
+            if charge > 0.65:
+                if charge_start_time is None:
+                    charge_start_time=time
+
+                if time-charge_start_time >=7:
+                    rasenshuriken=True
+            else:
+                charge_start_time=None
+                rasenshuriken=False
+
             fully_charged = charge>0.75
 
             radius=40+int(5*math.sin(time))
@@ -81,6 +93,37 @@ while True:
             cv2.circle(frame,(cx,cy),int(radius*0.4),(255,255,220),-1)
 
             cv2.circle(frame,(cx,cy),pulse_radius,(25,180,80),1)
+
+            if rasenshuriken:
+                shuruken_radius=radius+25
+
+                for i in range(4):
+                    angle=time*4+i*(math.pi/2)
+
+                    tip_x = int(cx+math.cos(angle)*(radius+75))
+                    tip_y = int(cy+math.sin(angle)*(radius+75))
+
+                    side_angle = 0.25
+
+                    left_x = int(cx+math.cos(angle+side_angle)*(radius+8))
+                    left_y = int(cy+math.sin(angle+side_angle)*(radius+8))
+
+                    right_x = int(cx+math.cos(angle-side_angle)*(radius+8))
+                    right_y = int(cy+math.sin(angle-side_angle)*(radius+8))
+
+                    inner_x=int(cx+math.cos(angle)*radius+15)
+                    inner_y=int(cy+math.sin(angle)*radius+15)
+
+                    points=np.array([
+                        (tip_x,tip_y),
+                        (left_x,left_y),
+                        (inner_x,inner_y),
+                        (right_x,right_y)
+                    ],np.int32)
+
+                    cv2.fillPoly(frame,[points],(255,220,120))
+                ring_radius = radius +55
+                cv2.circle(frame,(cx,cy),int(ring_radius),(180,255,255),2)
 
 
 
