@@ -96,23 +96,49 @@ while True:
 
             if rasenshuriken:
                 shuruken_radius=radius+25
+                tilt=0.45
+                orbit_angle=math.radians(35)
 
                 for i in range(4):
                     angle=time*4+i*(math.pi/2)
 
-                    tip_x = int(cx+math.cos(angle)*(radius+75))
-                    tip_y = int(cy+math.sin(angle)*(radius+75))
+                    x=math.cos(angle)*(radius+75)
+                    y=math.sin(angle)*(radius+75)*tilt
+
+                    rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
+                    rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
+
+                    tip_x = int(cx+rot_x)
+                    tip_y = int(cy+rot_y)
 
                     side_angle = 0.25
 
-                    left_x = int(cx+math.cos(angle+side_angle)*(radius+8))
-                    left_y = int(cy+math.sin(angle+side_angle)*(radius+8))
+                    x=math.cos(angle+side_angle)*(radius+8)
+                    y=math.sin(angle+side_angle)*(radius+8)*tilt
 
-                    right_x = int(cx+math.cos(angle-side_angle)*(radius+8))
-                    right_y = int(cy+math.sin(angle-side_angle)*(radius+8))
+                    rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
+                    rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
 
-                    inner_x=int(cx+math.cos(angle)*radius+15)
-                    inner_y=int(cy+math.sin(angle)*radius+15)
+                    left_x=int(cx+rot_x)
+                    left_y=int(cy+rot_y)
+
+                    x=math.cos(angle-side_angle)*(radius+8)
+                    y=math.sin(angle-side_angle)*(radius+8)*tilt
+
+                    rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
+                    rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
+
+                    right_x=int(cx+rot_x)
+                    right_y=int(cy+rot_y)
+
+                    x=math.cos(angle)*(radius+15)
+                    y=math.sin(angle)*(radius+15)*tilt
+
+                    rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
+                    rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
+
+                    inner_x=int(cx+rot_x)
+                    inner_y=int(cy+rot_y)
 
                     points=np.array([
                         (tip_x,tip_y),
@@ -122,9 +148,7 @@ while True:
                     ],np.int32)
 
                     cv2.fillPoly(frame,[points],(255,220,120))
-                ring_radius = radius +55
-                cv2.circle(frame,(cx,cy),int(ring_radius),(180,255,255),2)
-
+             
 
 
             colors=[
