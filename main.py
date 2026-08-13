@@ -97,13 +97,13 @@ while True:
             if rasenshuriken:
                 shuruken_radius=radius+25
                 tilt=0.45
-                orbit_angle=math.radians(35)
+                orbit_angle=math.radians(15)
 
                 for i in range(4):
-                    angle=time*4+i*(math.pi/2)
+                    angle=time*6+i*(math.pi/2)
 
-                    x=math.cos(angle)*(radius+75)
-                    y=math.sin(angle)*(radius+75)*tilt
+                    x=math.cos(angle)*(radius+220)
+                    y=math.sin(angle)*(radius+220)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
@@ -111,7 +111,7 @@ while True:
                     tip_x = int(cx+rot_x)
                     tip_y = int(cy+rot_y)
 
-                    side_angle = 0.25
+                    side_angle = 0.35
 
                     x=math.cos(angle+side_angle)*(radius+8)
                     y=math.sin(angle+side_angle)*(radius+8)*tilt
@@ -131,8 +131,8 @@ while True:
                     right_x=int(cx+rot_x)
                     right_y=int(cy+rot_y)
 
-                    x=math.cos(angle)*(radius+15)
-                    y=math.sin(angle)*(radius+15)*tilt
+                    x=math.cos(angle)*(radius+45)
+                    y=math.sin(angle)*(radius+45)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
