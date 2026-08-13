@@ -14,9 +14,11 @@ charge_start_time = None
 rasenshuriken=False
 
 mp_draw=mp.solutions.drawing_utils
+rotation_time=0
 
 camera = cv2.VideoCapture(0)
 while True:
+    rotation_time+=0.15
     time+=0.15 + charge*0.15
     success, frame=camera.read()
     if not success:
@@ -98,9 +100,14 @@ while True:
                 shuruken_radius=radius+25
                 tilt=0.45
                 orbit_angle=math.radians(15)
+                glow_layer=np.zeros_like(frame)
 
                 for i in range(4):
-                    angle=time*6+i*(math.pi/2)
+                    depth=math.cos(angle)
+                    angle=rotation_time*6+i*(math.pi/2)
+
+                    brightness=0.45+0.55*((depth+1)/2)
+
 
                     x=math.cos(angle)*(radius+220)
                     y=math.sin(angle)*(radius+220)*tilt
@@ -147,7 +154,9 @@ while True:
                         (right_x,right_y)
                     ],np.int32)
 
-                    cv2.fillPoly(frame,[points],(255,220,120))
+                    cv2.fillPoly(frame,[points],(int(255*brightness),int(220*brightness),int(120*brightness)))
+                    cv2.polylines(frame,[points],True,(255,255,255),2)
+                    
              
 
 
