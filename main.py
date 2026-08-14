@@ -99,12 +99,29 @@ while True:
             if rasenshuriken:
                 shuruken_radius=radius+25
                 tilt=0.45
+                side_angle=math.radians(8)
                 orbit_angle=math.radians(15)
                 glow_layer=np.zeros_like(frame)
 
                 for i in range(4):
                     depth=math.cos(angle)
                     angle=rotation_time*6+i*(math.pi/2)
+                    fast_angle=rotation_time*10+i*(math.pi/2)
+
+                    fast_x=math.cos(fast_angle)*(radius+160)
+                    fast_y=math.sin(fast_angle)*(radius+160)*tilt
+
+                    fast_rot_x=fast_x*math.cos(orbit_angle)-fast_y*math.sin(orbit_angle)
+                    fast_rot_y=fast_x*math.sin(orbit_angle)-fast_y*math.cos(orbit_angle)
+
+                    fast_tip_x=int(cx+fast_rot_x)
+                    fast_tip_y=int(cy+fast_rot_y)
+
+                  
+
+                    cv2.line(frame,(cx,cy),(fast_tip_x,fast_tip_y),(255,200,100),3)
+
+                   
 
                     brightness=0.45+0.55*((depth+1)/2)
 
@@ -154,8 +171,18 @@ while True:
                         (right_x,right_y)
                     ],np.int32)
 
+                  
+
                     cv2.fillPoly(frame,[points],(int(255*brightness),int(220*brightness),int(120*brightness)))
-                    cv2.polylines(frame,[points],True,(255,255,255),2)
+                    cv2.polylines(frame,[points],True,(255,240,180),2)
+                 
+
+
+                glow=np.zeros_like(frame)
+                cv2.fillPoly(glow,[points],[255,140,30])
+                glow=cv2.GaussianBlur(glow,(15,15),0)
+                frame=cv2.addWeighted(frame,1.0,glow,0.18,0)
+                
                     
              
 
