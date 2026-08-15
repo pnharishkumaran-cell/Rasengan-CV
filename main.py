@@ -104,30 +104,16 @@ while True:
                 glow_layer=np.zeros_like(frame)
 
                 for i in range(4):
-                    depth=math.cos(angle)
                     angle=rotation_time*6+i*(math.pi/2)
-                    fast_angle=rotation_time*10+i*(math.pi/2)
-
-                    fast_x=math.cos(fast_angle)*(radius+160)
-                    fast_y=math.sin(fast_angle)*(radius+160)*tilt
-
-                    fast_rot_x=fast_x*math.cos(orbit_angle)-fast_y*math.sin(orbit_angle)
-                    fast_rot_y=fast_x*math.sin(orbit_angle)-fast_y*math.cos(orbit_angle)
-
-                    fast_tip_x=int(cx+fast_rot_x)
-                    fast_tip_y=int(cy+fast_rot_y)
-
-                  
-
-                    cv2.line(frame,(cx,cy),(fast_tip_x,fast_tip_y),(255,200,100),3)
-
+                    depth=math.cos(angle)
+                   
                    
 
                     brightness=0.45+0.55*((depth+1)/2)
 
 
-                    x=math.cos(angle)*(radius+220)
-                    y=math.sin(angle)*(radius+220)*tilt
+                    x=math.cos(angle)*(radius+170)
+                    y=math.sin(angle)*(radius+170)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
@@ -135,10 +121,10 @@ while True:
                     tip_x = int(cx+rot_x)
                     tip_y = int(cy+rot_y)
 
-                    side_angle = 0.35
+                    side_angle = 0.22
 
-                    x=math.cos(angle+side_angle)*(radius+8)
-                    y=math.sin(angle+side_angle)*(radius+8)*tilt
+                    x=math.cos(angle+side_angle)*(radius+35)
+                    y=math.sin(angle+side_angle)*(radius+35)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
@@ -146,8 +132,8 @@ while True:
                     left_x=int(cx+rot_x)
                     left_y=int(cy+rot_y)
 
-                    x=math.cos(angle-side_angle)*(radius+8)
-                    y=math.sin(angle-side_angle)*(radius+8)*tilt
+                    x=math.cos(angle-side_angle)*(radius+35)
+                    y=math.sin(angle-side_angle)*(radius+35)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
@@ -155,8 +141,8 @@ while True:
                     right_x=int(cx+rot_x)
                     right_y=int(cy+rot_y)
 
-                    x=math.cos(angle)*(radius+45)
-                    y=math.sin(angle)*(radius+45)*tilt
+                    x=math.cos(angle)*(radius+70)
+                    y=math.sin(angle)*(radius+70)*tilt
 
                     rot_x=x*math.cos(orbit_angle)-y*math.sin(orbit_angle)
                     rot_y=x*math.sin(orbit_angle)+y*math.cos(orbit_angle)
@@ -229,64 +215,43 @@ while True:
                     inner_angle = (
                         time*(2.2+arm+0.08)+arm_offset+i*0.18
                     )
+                    # Lightweight anime-style swirl
 
-                    for i in range(3):
-                        angle=time*rotation_speed+i*(2*math.pi/3)
-                        for t in range(0,100,7):
-                            r=(t/100)*radius
-                            theta = angle +t * 0.08
-                            x=int(cx+r*math.cos(theta))
-                            y=int(cy+r*math.sin(theta))
+                    swirl_strength = 0.7
 
-                            cv2.circle(frame,(x,y),1,(255,170,70),-1)
+                    for s in range(3):
 
-                    inner_x=int(cx+inner_radius*math.cos(inner_angle))
-                    inner_y=int(cy+inner_radius*math.sin(inner_angle))
+                        base_angle = time * 2.5 + s * (2 * math.pi / 3)
 
-                    inner_x+=random.randint(-1,1)
-                    inner_y+=random.randint(-1,1)
+                        previous = None
 
-                    trial_x = int(inner_x -trial_length*math.cos(inner_angle))
-                    trial_y = int(inner_y -trial_length*math.sin(inner_angle))
+                        for t in range(0, 25, 4):
 
-                    cv2.line(frame,(trial_x,trial_y),(inner_x,inner_y),particle_color,1)
-                    cv2.circle(frame,(inner_x,inner_y),particle_size,particle_color,-1) 
+                            progress = t / 24
+                            swirl_radius = radius * 0.75 * progress
 
-                    middle_angle=(-time*1.5+arm_offset+i*0.35)
+                            swirl_angle = base_angle + progress * 2.8
 
-                    middle_x=int(cx+middle_radius*math.cos(middle_angle))
-                    middle_y=int(cy+middle_radius*math.sin(middle_angle))
+                            x = int(cx + swirl_radius * math.cos(swirl_angle))
+                            y = int(cy + swirl_radius * math.sin(swirl_angle))
 
-                    middle_x+=random.randint(-1,1)
-                    middle_y+=random.randint(-1,1)
+                            current = (x, y)
 
-                    trial_x=int(middle_x-trial_length*math.cos(middle_angle))
-                    trial_y=int(middle_y-trial_length*math.sin(middle_angle))
+                            if previous is not None:
+                                cv2.line(
+                                    frame,
+                                    previous,
+                                    current,
+                                    (255, 210, 120),
+                                    1,
+                                    cv2.LINE_AA
+                                )
 
-                    cv2.line(frame,(trial_x,trial_y),(middle_x,middle_y),particle_color,1)
-                    cv2.circle(frame,(middle_x,middle_y),particle_size,particle_color,-1)
+                            previous = current
 
-                    outer_angle=(time*0.9+arm_offset+i*0.35)
+                                        
 
-                    outer_x=int(cx+outer_radius*math.cos(outer_angle))
-                    outer_y=int(cy+outer_radius*math.sin(outer_angle))
 
-                    outer_x+=random.randint(-1,1)
-                    outer_y+=random.randint(-1,1)
-
-                    trial_x=int(outer_x-trial_length*math.cos(outer_angle))
-                    trial_y=int(outer_y-trial_length*math.sin(outer_angle))
-                    
-                    cv2.line(frame,(trial_x,trial_y),(outer_x,outer_y),particle_color,1)
-                    cv2.circle(frame,(outer_x,outer_y),particle_size,particle_color,-1)
-
-                    for angle in range(0,360,15):
-                        theta = math.radians(angle)+time*2
-
-                        ring_x = int(cx+(radius+18)*math.cos(theta))
-                        ring_y = int(cy+(radius+8)*math.sin(theta))
-
-                        cv2.circle(frame,(ring_x,ring_y),2,(255,170,60),-1)
             if fully_charged:
                 for i in range(20):
                     burst_angle = ( 2*math.pi* i/120) + time*2
