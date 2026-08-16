@@ -92,10 +92,47 @@ while True:
             cv2.circle(frame,(cx,cy),core_radius+2,(255,200,100),-1)
             cv2.circle(frame,(cx,cy),core_radius,(255,120,40),-1)
             cv2.circle(frame,(cx,cy),int(radius*0.75),(255,180,120),-1)
-            cv2.circle(frame,(cx,cy),int(radius*0.4),(255,255,220),-1)
+            cv2.circle(frame,(cx,cy),int(radius*0.4),(255,255,245),-1)
 
-            cv2.circle(frame,(cx,cy),pulse_radius,(25,180,80),1)
+            cv2.circle(frame,(cx,cy),pulse_radius,(255,225,220),1)
 
+           # Soft flowing chakra aura
+
+            aura_layer = np.zeros_like(frame)
+
+            for i in range(7):
+                base_angle = rotation_time * (1.0 + charge * 0.8) + i * (2 * math.pi / 7)
+
+                pts = []
+
+                for j in range(9):
+                    t = j / 8
+
+                    # Small gap from the Rasengan
+                    r = radius + 16 + t * 8
+
+                    # Flowing irregular curve
+                    wave = math.sin(t * math.pi * 2 + rotation_time * 3 + i) * (4 + charge * 5)
+
+                    angle = base_angle + t * 1.15
+
+                    x = cx + math.cos(angle) * (r + wave)
+                    y = cy + math.sin(angle) * (r + wave)
+
+                    pts.append((int(x), int(y)))
+
+                pts = np.array(pts, np.int32)
+
+                cv2.polylines(
+                    aura_layer,
+                    [pts],
+                    False,
+                    (255, 220, 180),
+                    2,
+                    cv2.LINE_AA
+                )
+
+            frame = cv2.addWeighted(frame, 1.0, aura_layer, 0.55, 0)
             if rasenshuriken:
                 shuruken_radius=radius+25
                 tilt=0.45
@@ -160,7 +197,7 @@ while True:
                   
 
                     cv2.fillPoly(frame,[points],(int(255*brightness),int(220*brightness),int(120*brightness)))
-                    cv2.polylines(frame,[points],True,(255,240,180),2)
+                    cv2.polylines(frame,[points],True,(255,220,120),2)
                  
 
 
@@ -248,6 +285,7 @@ while True:
                                 )
 
                             previous = current
+
 
                                         
 
